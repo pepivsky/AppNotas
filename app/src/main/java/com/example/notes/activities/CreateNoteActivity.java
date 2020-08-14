@@ -58,6 +58,8 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     private AlertDialog dialogAddURL;
 
+    private Note alreadyAvalaibleNote;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,8 +98,32 @@ public class CreateNoteActivity extends AppCompatActivity {
         selectedNoteColor = "#333333"; //Color por defecto
         selectedImagePath = "";
 
+        if (getIntent().getBooleanExtra("isViewOrUpdate", false)) {
+            alreadyAvalaibleNote = (Note) getIntent().getSerializableExtra("note");
+            setViewOrUpdateNote();
+        }
+
         initMicellaneous();
         setSubtitleindicatorColor();
+    }
+
+    private void setViewOrUpdateNote() {
+        inputNoteTitle.setText(alreadyAvalaibleNote.getTitle());
+        inputNoteSubtitle.setText(alreadyAvalaibleNote.getSubtitle());
+        inputNoteText.setText(alreadyAvalaibleNote.getNoteText());
+        textDateTime.setText(alreadyAvalaibleNote.getDatetime());
+
+        if (alreadyAvalaibleNote.getImagePath() != null && !alreadyAvalaibleNote.getImagePath().trim().isEmpty()) {
+            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvalaibleNote.getImagePath()));
+            imageNote.setVisibility(View.VISIBLE);
+            selectedImagePath = alreadyAvalaibleNote.getImagePath();
+        }
+
+        if (alreadyAvalaibleNote.getWebLink() != null && !alreadyAvalaibleNote.getWebLink().trim().isEmpty()) {
+            textWebURL.setText(alreadyAvalaibleNote.getWebLink());
+            layoutWebURL.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private void saveNote() {
@@ -118,6 +144,10 @@ public class CreateNoteActivity extends AppCompatActivity {
 
         if (layoutWebURL.getVisibility() == View.VISIBLE) {
             note.setWebLink(textWebURL.getText().toString());
+        }
+
+        if (alreadyAvalaibleNote != null) {
+            note.setId(alreadyAvalaibleNote.getId());
         }
 
         @SuppressLint("StaticFieldLeak")
@@ -226,6 +256,26 @@ public class CreateNoteActivity extends AppCompatActivity {
 
             }
         });
+
+        if (alreadyAvalaibleNote != null && alreadyAvalaibleNote.getColor() != null && !alreadyAvalaibleNote.getColor().trim().isEmpty()) {
+            switch (alreadyAvalaibleNote.getColor()) {
+                case "#FDBE3B":
+                    layoutMicellaneous.findViewById(R.id.viewColor2).performClick();
+                    break;
+
+                case "#FF4842":
+                    layoutMicellaneous.findViewById(R.id.viewColor3).performClick();
+                    break;
+
+                case "#3A52fc":
+                    layoutMicellaneous.findViewById(R.id.viewColor4).performClick();
+                    break;
+
+                case "#000000":
+                    layoutMicellaneous.findViewById(R.id.viewColor5).performClick();
+                    break;
+            }
+        }
 
         layoutMicellaneous.findViewById(R.id.layoutAddImage).setOnClickListener(new View.OnClickListener() {
             @Override
